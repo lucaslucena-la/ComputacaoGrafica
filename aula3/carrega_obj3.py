@@ -6,7 +6,7 @@ import sys
 
 # Lembrando que o arquivo obj têm que tá na pasta
 try:
-    scene = pywavefront.Wavefront('dice.obj', collect_faces=True, create_materials=True)
+    scene = pywavefront.Wavefront('gato.obj', collect_faces=True, create_materials=True)
 except Exception as e:
     print(f"deu erro no arquivo: {e}")
     sys.exit()
@@ -32,13 +32,17 @@ def draw_scene(window):
     # Corzinha pro dado (lilás)
     glMaterialfv(GL_FRONT, GL_DIFFUSE, [0.7, 0.5, 0.9, 1.0])
     
-    # centralizado o dado pra ver 
-    glScalef(1.0, 1.0, 1.0)          
-    glTranslatef(0.0, -1.0, 0.0)     
+
+    # Rotação animada no eixo X
+    glRotatef(glfw.get_time() * 30, 0, 1, 0)
+
+    # Escala
+    glScalef(0.1, 0.1, 0.1)
     
-    # Rodando o dado pra bater a luz 
-    # glRotatef(glfw.get_time() * 30, 0, 1, 0)
-   
+    glTranslatef(0.0, -0.3, 0.0)    
+    glRotatef(-90, 1, 0, 0)
+    
+    
     #desenhando os triângulos do objeto 
     for name, mesh in scene.meshes.items():
         glBegin(GL_TRIANGLES)
