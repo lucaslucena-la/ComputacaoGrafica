@@ -14,7 +14,7 @@ wheel_rotation = 0
 keys = {}
 
 # =========================
-# CÂMERA
+# CÂMERA (INALTERADA)
 # =========================
 eye = [8.0, 10.0, 20.0]
 center = [0.0, 0.0, 0.0]
@@ -51,6 +51,58 @@ def resize(window, w, h):
     gluPerspective(45.0, w / h, 0.1, 100.0)
 
     glMatrixMode(GL_MODELVIEW)
+
+# =========================
+# LAYOUT (NOVO SOLO)
+# =========================
+def draw_ground():
+    size = 60
+
+    # GRAMA
+    glColor3f(0.2, 0.6, 0.2)
+    glBegin(GL_QUADS)
+    glVertex3f(-size, 0, -size)
+    glVertex3f(-size, 0, size)
+    glVertex3f(size, 0, size)
+    glVertex3f(size, 0, -size)
+    glEnd()
+
+    road_width = 6
+
+    # ASFALTO
+    glColor3f(0.1, 0.1, 0.1)
+    glBegin(GL_QUADS)
+    glVertex3f(-road_width/2, 0.01, -size)
+    glVertex3f(-road_width/2, 0.01, size)
+    glVertex3f( road_width/2, 0.01, size)
+    glVertex3f( road_width/2, 0.01, -size)
+    glEnd()
+
+    # BORDAS BRANCAS
+    glColor3f(1, 1, 1)
+    glBegin(GL_QUADS)
+    # esquerda
+    glVertex3f(-road_width/2, 0.02, -size)
+    glVertex3f(-road_width/2 + 0.2, 0.02, -size)
+    glVertex3f(-road_width/2 + 0.2, 0.02, size)
+    glVertex3f(-road_width/2, 0.02, size)
+
+    # direita
+    glVertex3f(road_width/2 - 0.2, 0.02, -size)
+    glVertex3f(road_width/2, 0.02, -size)
+    glVertex3f(road_width/2, 0.02, size)
+    glVertex3f(road_width/2 - 0.2, 0.02, size)
+    glEnd()
+
+    # FAIXA TRACEJADA
+    glColor3f(1, 1, 0)
+    glBegin(GL_QUADS)
+    for z in range(-size, size, 4):
+        glVertex3f(-0.15, 0.03, z)
+        glVertex3f(-0.15, 0.03, z + 2)
+        glVertex3f(0.15, 0.03, z + 2)
+        glVertex3f(0.15, 0.03, z)
+    glEnd()
 
 # =========================
 # OBJ
@@ -110,7 +162,7 @@ def draw_object(vertices, faces):
     glEnd()
 
 # =========================
-# CÂMERA
+# CÂMERA (INALTERADA)
 # =========================
 def apply_camera():
     gluLookAt(
@@ -127,7 +179,6 @@ def update_camera():
 
     right = normalize(cross(forward, up))
 
-    # movimento
     if keys.get(glfw.KEY_W):
         for i in range(3):
             eye[i] += forward[i] * camera_speed
@@ -156,7 +207,6 @@ def update_camera():
         eye[1] -= camera_speed
         center[1] -= camera_speed
 
-    # alterar center
     if keys.get(glfw.KEY_I):
         center[2] -= camera_speed
     if keys.get(glfw.KEY_K):
@@ -166,7 +216,6 @@ def update_camera():
     if keys.get(glfw.KEY_L):
         center[0] += camera_speed
 
-    # alterar up
     if keys.get(glfw.KEY_Z):
         up[0] += 0.01
     if keys.get(glfw.KEY_X):
@@ -208,9 +257,11 @@ def display(vertices, objects):
 
     apply_camera()
 
+    draw_ground()
+
     glPushMatrix()
 
-    glTranslatef(car_x, 0, car_z)
+    glTranslatef(car_x, 0.02, car_z)
     glRotatef(car_angle, 0, 1, 0)
     glTranslatef(0, 1, 0)
 
@@ -250,7 +301,7 @@ def main():
     if not glfw.init():
         return
 
-    window = glfw.create_window(1280, 720, "Carro 3D com Camera Livre", None, None)
+    window = glfw.create_window(1280, 720, "Carro 3D", None, None)
 
     if not window:
         glfw.terminate()
@@ -268,7 +319,7 @@ def main():
     while not glfw.window_should_close(window):
 
         update_movement()
-        update_camera()  # <<< câmera adicionada
+        update_camera()
 
         display(vertices, objects)
 
